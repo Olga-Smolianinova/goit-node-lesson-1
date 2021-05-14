@@ -1,4 +1,4 @@
-//создание простого http-сервера с помощью встроенного модуля http и с использованием только втроенных методов
+//создание простого http-сервера с помощью встроенного модуля http и с использованием только втроенных методов. http-сервер работает с GET
 
 // MODULE
 const http = require("http"); //подключаем встроенный модуль http
@@ -54,6 +54,47 @@ http
 
       default:
         break;
+    }
+
+    // нужно установить перехватчик при POST-запросе. Срабатывают т.н. stream - это значить, что данные формы будут передаваться по частям, небольшими chunk.
+    if (pathname === "/contact" && req.method === "POST") {
+      const body = [];
+
+      // на req мы вешаем обработчик события на data, когда форма начала присылать данные, который будет их слать частями (chunk).
+      req.on("data", (chunk) => {
+        // и мы в наш массив body.push эти части (chunk)
+        body.push(chunk);
+      });
+
+      // Когда браузер закончить слать эти (chunk), на событие "end" - будем использовать асинхронную функцию, но в "end" - никогда ничего не передается. Если произошло событие при передаче - нужно повесить обработчик события req.on('error'), и если 'error' - будем возвращать
+      req.on("end", async () => {
+        console.log(body); // ответ - Buffer
+
+        // чтобы преобразовать Buffer используем decodeURIComponent(), который будет декодировать кириллические символы и статический метод Buffer.concat, в который передаем body и преобразовываем в toSting
+        const parsedBody = decodeURIComponent(Buffer.concat(body).toString());
+        console.log(parsedBody); //введенные данные в форму приходят так: name=olga&email=1@test.com&text=test
+
+        // У querystring есть метод parse, в который передаем parsedBody и он приведет данные в нормальный вид
+        const parsedObj = querystring.parse(parsedBody);
+        //теперь выглядят так
+        //[Object: null prototype] {
+        //   name: 'olga',
+        //   email: '1@test.com',
+        //   text: 'test'
+        // }
+        console.log(parsedObj);
+
+        await fs.writeFile("message.json", JSON.stringify(parsedObj, null, 2));
+      });
+
+      // установим statusCode = 302, что нужно выполнить redirect
+      res.statusCode = 302;
+
+      // установим заголовок "Location". Когда браузер видит такой заголовок, он просто сюда приходит и переходит на этот url
+      res.setHeader("Location", "/contact");
+
+      // чтобы дальше выполнение не пошло
+      return res.end();
     }
 
     //   нужно вытащить type. из TypeMime с помощью extname извлекаем расширение и передаем filename. Т.е. мы идем в filename, вытаскиваем из него расширение (.html или .css), с помощью подстановки из этого объекта будет возвращаться contentType (или "text/html" или "text/javascript" и т.д., т.е. какие файлы появятся, те и будем отдавать)

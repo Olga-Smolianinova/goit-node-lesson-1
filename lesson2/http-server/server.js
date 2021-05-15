@@ -16,15 +16,15 @@ const TypeMime = {
   //   для картинок
   ".png": "image/png",
   ".jpg": "image/jpg",
-  ".ico": "image/x-ocon",
-  ".svg": "image/xml",
+  ".ico": "image/x-icon",
+  ".svg": "image/svg+xml",
   ".webp": "image/webp",
 };
 
-// у http есть функция createServer(), делаем ее асинхронной. req, res - то, что запрашивается и то, что отдается
+// у http есть функция createServer(), делаем ее асинхронной. req, res - то, что запрашивается и то, что отдается. req имеет много методов, будем с ними постепенно знакомится; res - имеет 3 метода - это ответ, writeHead, write, end
 http
   .createServer(async (req, res) => {
-    // //   создание простейшего варианта сервера
+    // создание простейшего варианта сервера
     // res.write("Hello, world!"); //что будет выведено
     // res.end(); //то, что мы закончили поток выдачи
     //   чтобы отдать статику
@@ -77,7 +77,7 @@ http
         // У querystring есть метод parse, в который передаем parsedBody и он приведет данные в нормальный вид
         const parsedObj = querystring.parse(parsedBody);
         //теперь выглядят так
-        //[Object: null prototype] {
+        // [Object: null prototype] {
         //   name: 'olga',
         //   email: '1@test.com',
         //   text: 'test'

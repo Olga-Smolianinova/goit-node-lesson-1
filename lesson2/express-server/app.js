@@ -31,7 +31,8 @@ app.use(logger("dev")); //подключение логгера, который 
 app.use(express.json({ limit: 100000 }));
 app.use(express.urlencoded({ extended: false })); // движок распарсинга данных меняется, по умолчанию false; true - используется когда мы извращаемся и начинаем передавать много радиокнопок с разными данными, практически не используется
 
-app.use(cookieParser()); //подключение cookieParser
+// app.use(cookieParser()); //подключение cookieParser
+
 app.use(express.static(path.join(__dirname, "public"))); //указываем статику, которая, как указано будет находиться в папке public
 
 app.use("/", indexRouter); //это будет наш сайт

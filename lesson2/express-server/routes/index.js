@@ -18,12 +18,19 @@ router.get("/contact", (req, res, next) => {
 
 // Обработка формы
 router.post("/contact", async (req, res, next) => {
-  // записываем данные, которые приходят из формы в "..", "data", message.json, предварительно приведя данные в необходимый вид
+  // //чтобы данные в файле message-json не перезаписывались, а добавлялись новые, читаем путь. Изначально message.json - поставить []. Не работает
+  // const content = JSON.parse(await fs.readFile("../data/data.json", "utf-8"));
+  // content.push(req.body);
+
+  // await fs.writeFile("../data/data.json", JSON.stringify(content, null, 2));
+  // res.redirect("/");
+
+  // записываем данные, которые приходят из формы в "..", "data", message.json, предварительно приведя данные в необходимый вид. req.body- это данные которые проиходят из формы, но данные будут перезаписываться каждыц раз при такой записи. Изначально message.json - пустой
   await fs.writeFile(
     path.join(__dirname, "..", "data", " message.json"),
     JSON.stringify(req.body, null, 2)
   );
-  // те данные, которые приходят redirect
+  // те данные, которые приходят redirect на главную страницу index.html
   await res.redirect("/");
 });
 
